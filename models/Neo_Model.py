@@ -14,7 +14,7 @@ from Datasets import Custom_Dataset
 
 
 class Neo(pl.LightningModule):
-    def __init__(self, hparams):
+    def __init__(self, hparams): # the hparams here is the parsed config
         super(Neo, self).__init__()
         self.mode = hparams.mode
 
@@ -166,6 +166,7 @@ class Neo(pl.LightningModule):
         value_dict['loss'] = mean_losses
         return value_dict
 
+    # memorization accuracy is the fraction of predicting the correct next word given prefixes out of T timesteps
     def validation_ma(self, batch, dataset_name):
         input_ids = batch['source_ids']
         max_len = self.target_length
@@ -186,6 +187,7 @@ class Neo(pl.LightningModule):
         preds = torch.stack(preds)
         labels = torch.stack(labels)
 
+        # this accuracy function calculates exactly what we need
         score = accuracy(preds, labels, ignore_index=-100)
         self.log(
             f'{dataset_name}/acc',
@@ -199,6 +201,8 @@ class Neo(pl.LightningModule):
         # return individual example results for logging
         return torch.t(preds), torch.t(labels)
 
+
+    # calculate extraction likelihood defined in the paper
     def validation_el(self, batch, dataset_name):
         input_ids = batch['source_ids']
         max_len = self.target_length
@@ -664,7 +668,8 @@ class Neo(pl.LightningModule):
     def configure_optimizers(self):
         parameters = self.model.parameters()
         if self.hparams.strategy in ['deepspeed_stage_2']:
-            optimizer = deepspeed.ops.adam.FusedAdam(
+            self.hparams.strategy.config["zero_force_ds_cpu_optimizer"] = False
+            optimizer = deepspeed.ops.adam.DeepSpeedCPUAdam(
                 parameters,
                 lr=self.hparams.learning_rate,
                 betas=(0.9, 0.98))

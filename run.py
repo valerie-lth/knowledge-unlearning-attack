@@ -88,8 +88,7 @@ if __name__ == '__main__':
     if config.wandb_log:
         wandb_logger = WandbLogger(
             project=config.wandb_project,
-            name=config.wandb_run_name,
-            entity='lklab_kaist')
+            name=config.wandb_run_name)
     else:
         wandb_logger = None
 
@@ -124,6 +123,7 @@ if __name__ == '__main__':
         trainer.validate(model)
     else:
         trainer = pl.Trainer(**train_params)
+        trainer.strategy.config["zero_force_ds_cpu_optimizer"] = False
         if config.do_init_eval:
             model = NeoValid(config)
             trainer.validate(model)

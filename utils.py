@@ -16,7 +16,7 @@ class MetricTracker(Callback):
         # new_df = new_df[self.df.columns]
         # self.df = pd.concat([self.df, new_df])
         new_df.to_csv(f'csv_out/{self.run_name}.csv')
-        print('Hello World')
+        print('--------- Validation ends. Save to output csv. ---------')
 
     # def on_validation_epoch_end(self, trainer, module):
     #     if isinstance(module, GPT2Valid):

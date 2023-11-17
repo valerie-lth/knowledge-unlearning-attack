@@ -85,8 +85,7 @@ if __name__ == '__main__':
     if config.wandb_log:
         wandb_logger = WandbLogger(
             project=config.wandb_project,
-            name=config.wandb_run_name,
-            entity='lklab_kaist')
+            name=config.wandb_run_name)
     else:
         wandb_logger = None
 

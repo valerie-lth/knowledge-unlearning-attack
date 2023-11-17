@@ -21,8 +21,8 @@ class Custom_Dataset(Dataset):
         self.tokenizer = tokenizer
         self.input_length = input_length
         self.output_length = output_length
-        self.dataset_name = dataset_name
-        self.type_path = type_path
+        self.dataset_name = dataset_name # inidividual entries of dataset names in the config
+        self.type_path = type_path # target, test, validation
         self.valid_subset_path = valid_subset_path
 
         if self.type_path == 'train':
@@ -44,14 +44,12 @@ class Custom_Dataset(Dataset):
                         self.dataset_name,
                         valid_subset_path,
                         split=type_path,
-                        ignore_verifications=True,
-                        cache_dir=args.cache_dir)
+                        ignore_verifications=True)
                 else:
                     dataset = load_dataset(
                         self.dataset_name,
                         split=type_path,
-                        ignore_verifications=True,
-                        cache_dir=args.cache_dir)
+                        ignore_verifications=True)
                 self.dataset = dataset.to_pandas()
 
         # About 4 examples have one more or one less class for some reason,
@@ -89,6 +87,8 @@ class Custom_Dataset(Dataset):
             prompt += f'User 2:'
         return prompt
 
+    # manually classify datasets into catagories using regex matching
+    # perform data clearning when loading from the huggingface hub, then tokenize the data
     def convert_to_features(self, example_batch):
         try:
             doc_id = torch.tensor(example_batch['doc_id'], dtype=torch.int)

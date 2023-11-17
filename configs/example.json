@@ -56,6 +56,7 @@
     "target_length": 200,
     "num_workers": 64,
     "strategy": "deepspeed_stage_2_offload",
+    "zero_force_ds_cpu_optimizer": false,
     "fp16": true,
     "wandb_log": true
 }
